@@ -113,8 +113,10 @@ class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
+    var state = context.watch<MyAppState>();
+
     return Column(children: [
-      Text("Go die"),
+      Text(state.favorites.toString()),
     ],);
   }
 }
@@ -218,5 +220,3 @@ class BigCard extends StatelessWidget {
     );
   }
 }
-
-//CONTINUE AT CENTER THE UI
