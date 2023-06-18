@@ -115,7 +115,7 @@ class FavoritesPage extends StatelessWidget {
     
     var state = context.watch<MyAppState>();
 
-    return Column(children: [
+    return SafeArea(child: Column(children: [
       Text('Liked Words:',
                 style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onBackground,
@@ -123,7 +123,8 @@ class FavoritesPage extends StatelessWidget {
 
                     for (var pair in state.favorites)
                       LikedWordCard(pair: pair),
-    ],);
+    ],)
+    );
   }
 }
 
