@@ -43,6 +43,11 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void removeFavorite(WordPair wp) {
+        favorites.remove(wp);
+        notifyListeners();
+    }
 }
 
 // ...
@@ -135,19 +140,28 @@ class LikedWordCard extends StatelessWidget {
   });
 
   final WordPair pair;
+
   
   @override
   Widget build(BuildContext context) {
-    return Card(color: Theme.of(context).cardColor,
+      final theme = Theme.of(context);
+      final style = theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onPrimary); 
+
+      var state = context.watch<MyAppState>();
+
+    return Card(color: theme.primaryColor,
     child: Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
         children: [
-        Text(pair.asPascalCase),
-        SizedBox(width: 8),
-        Text("2"),
+        Text("${pair.first} ${pair.second}", style: style,),        
+        ElevatedButton.icon(onPressed: () => {
+            state.removeFavorite(pair)
+        },
+        icon: Icon(Icons.delete),
+        label: Text("Remove"),),
       ],),
     ),
     );
