@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,9 +47,9 @@ class MyAppState extends ChangeNotifier {
   }
 
   void removeFavorite(WordPair wp) {
-        favorites.remove(wp);
-        notifyListeners();
-    }
+    favorites.remove(wp);
+    notifyListeners();
+  }
 }
 
 // ...
@@ -74,62 +76,62 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Scaffold(
-          body: Row(
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                  extended: constraints.maxWidth >= 1000,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text('Home'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.favorite),
-                      label: Text('Favorites'),
-                    ),
-                  ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  },
-                ),
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                extended: constraints.maxWidth >= 1000,
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home),
+                    label: Text('Home'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.favorite),
+                    label: Text('Favorites'),
+                  ),
+                ],
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
               ),
-              Expanded(
-                child: Container(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  child: page,
-                ),
+            ),
+            Expanded(
+              child: Container(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                child: page,
               ),
-            ],
-          ),
-        );
-      }
-    );
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
 class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    
     var state = context.watch<MyAppState>();
 
-    return SafeArea(child: Column(children: [
-      Text('Liked Words:',
-                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onBackground,
-                    )),
-
-                    for (var pair in state.favorites)
-                      LikedWordCard(pair: pair),
-    ],)
-    );
+    return SafeArea(
+        child: ListView(
+      primary: false,
+      padding: const EdgeInsets.all(20),
+      children: <Widget>[
+        Text('Liked Words:',
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                )),
+        for (var pair in state.favorites)
+          LikedWordCard(pair: pair),
+      ],
+    ));
   }
 }
 
@@ -141,29 +143,33 @@ class LikedWordCard extends StatelessWidget {
 
   final WordPair pair;
 
-  
   @override
   Widget build(BuildContext context) {
-      final theme = Theme.of(context);
-      final style = theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onPrimary); 
+    final theme = Theme.of(context);
+    final style = theme.textTheme.bodyMedium!
+        .copyWith(color: theme.colorScheme.onPrimary);
 
-      var state = context.watch<MyAppState>();
-
-    return Card(color: theme.primaryColor,
-    child: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-        Text("${pair.first} ${pair.second}", style: style,),        
-        ElevatedButton.icon(onPressed: () => {
-            state.removeFavorite(pair)
-        },
-        icon: Icon(Icons.delete),
-        label: Text("Remove"),),
-      ],),
-    ),
+    var state = context.watch<MyAppState>();
+    return Card(
+      color: Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              "${pair.first} ${pair.second}",
+              style: style,
+            ),
+            ElevatedButton.icon(
+              onPressed: () => {state.removeFavorite(pair)},
+              icon: Icon(Icons.delete),
+              label: Text("Remove"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
