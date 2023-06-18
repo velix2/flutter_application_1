@@ -116,8 +116,40 @@ class FavoritesPage extends StatelessWidget {
     var state = context.watch<MyAppState>();
 
     return Column(children: [
-      Text(state.favorites.toString()),
+      Text('Liked Words:',
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    )),
+
+                    for (var pair in state.favorites)
+                      LikedWordCard(pair: pair),
     ],);
+  }
+}
+
+class LikedWordCard extends StatelessWidget {
+  const LikedWordCard({
+    super.key,
+    required this.pair,
+  });
+
+  final WordPair pair;
+  
+  @override
+  Widget build(BuildContext context) {
+    return Card(color: Theme.of(context).cardColor,
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+        Text(pair.asPascalCase),
+        SizedBox(width: 8),
+        Text("2"),
+      ],),
+    ),
+    );
   }
 }
 
