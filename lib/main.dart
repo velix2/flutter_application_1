@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
         ),
         home: MyHomePage(),
       ),
@@ -33,10 +33,10 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-var favorites = <WordPair>[];
+  var favorites = <WordPair>[];
 
   void toggleFavorite() {
-    if(favorites.contains(current)) {
+    if (favorites.contains(current)) {
       favorites.remove(current);
     } else {
       favorites.add(current);
@@ -47,15 +47,34 @@ var favorites = <WordPair>[];
 
 // ...
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  var selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    Widget page;
+    switch (selectedIndex) {
+      case 0:
+        page = GeneratorPage();
+        break;
+      case 1:
+        page = Placeholder();
+        break;
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
+    }
+
     return Scaffold(
       body: Row(
         children: [
           SafeArea(
             child: NavigationRail(
-              extended: false,
+              extended: true,
               destinations: [
                 NavigationRailDestination(
                   icon: Icon(Icons.home),
@@ -66,16 +85,18 @@ class MyHomePage extends StatelessWidget {
                   label: Text('Favorites'),
                 ),
               ],
-              selectedIndex: 0,
+              selectedIndex: selectedIndex,
               onDestinationSelected: (value) {
-                print('selected: $value');
+                setState(() {
+                  selectedIndex = value;
+                });
               },
             ),
           ),
           Expanded(
             child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: GeneratorPage(),
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              child: page,
             ),
           ),
         ],
@@ -83,7 +104,6 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
-
 
 class GeneratorPage extends StatelessWidget {
   @override
@@ -99,36 +119,36 @@ class GeneratorPage extends StatelessWidget {
     }
 
     return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Word Pair of the Day:', style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
-                  )),
-            ),
-            BigCard(pair: pair),
-            
-            SizedBox(height: 12.0,),
-
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LikeButton(appState: appState, icon: icon),
-
-                SizedBox(width: 8.0),
-
-                ElevatedButton(onPressed: () {
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Word Pair of the Day:',
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    )),
+          ),
+          BigCard(pair: pair),
+          SizedBox(
+            height: 12.0,
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              LikeButton(appState: appState, icon: icon),
+              SizedBox(width: 8.0),
+              ElevatedButton(
+                onPressed: () {
                   appState.getNext();
                 },
                 child: Text("New..."),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -144,12 +164,14 @@ class LikeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return ElevatedButton.icon(onPressed: () {
-      appState.toggleFavorite();
-    },
-    icon: Icon(icon),
-    label: Text("Like",),
+    return ElevatedButton.icon(
+      onPressed: () {
+        appState.toggleFavorite();
+      },
+      icon: Icon(icon),
+      label: Text(
+        "Like",
+      ),
     );
   }
 }
@@ -173,9 +195,11 @@ class BigCard extends StatelessWidget {
       color: theme.primaryColor,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Text("${pair.first} ${pair.second}", 
+        child: Text(
+          "${pair.first} ${pair.second}",
           style: style,
-          semanticsLabel: "${pair.first} ${pair.second}",),
+          semanticsLabel: "${pair.first} ${pair.second}",
+        ),
       ),
     );
   }
